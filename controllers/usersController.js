@@ -1,11 +1,11 @@
-import expressAsyncHandler from "express-async-handler";
-import { signInService, signUpUserService } from "../services/usersServices.js";
+import expressAsyncHandler from 'express-async-handler';
+import { signInService, signUpUserService } from '../services/usersServices.js';
 
 export const signUp = expressAsyncHandler(async (req, res) => {
   await signUpUserService(req.body);
 
   res.status(201).json({
-    message: "Created",
+    message: 'Created',
   });
 });
 
