@@ -1,12 +1,17 @@
-import express from 'express';
+import express from "express";
+import { joiValidateDataMiddleware } from "../middlewares/joiValidatorMiddleware.js";
+import { signUpJoiSchema } from "../schemas/usersSchemas.js";
+import { current, signIn, signUp } from "../controllers/usersController.js";
+import { protection } from "../middlewares/usersMiddlewares.js";
 
 const usersRouter = express.Router();
 
-usersRouter.post('/signup');
-usersRouter.post('/signin');
-usersRouter.get('/current/refresh');
-usersRouter.get('/current');
-usersRouter.patch('/current/edit');
-usersRouter.post('/signout');
+usersRouter.post("/signup", joiValidateDataMiddleware(signUpJoiSchema), signUp);
+usersRouter.post("/signin", signIn);
+
+usersRouter.get("/current", protection, current);
+usersRouter.patch("/current/edit");
+usersRouter.get("/current/refresh");
+usersRouter.post("/signout");
 
 export { usersRouter };
