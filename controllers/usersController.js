@@ -33,8 +33,8 @@ export const currentUser = (req, res) => {
 };
 
 export const editUser = expressAsyncHandler(async (req, res) => {
-  const { user, body } = req;
-  const newUser = await editUserService(user.id, user.email, body);
+  const { user, body, file } = req;
+  const newUser = await editUserService(user.id, user.email, body, file);
   res.status(200).json({
     user: newUser,
   });

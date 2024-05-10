@@ -14,7 +14,7 @@ import {
   editUser,
   signOut,
 } from '../controllers/usersController.js';
-import { protection } from '../middlewares/usersMiddlewares.js';
+import { protection, uploadAvatar } from '../middlewares/usersMiddlewares.js';
 
 const usersRouter = express.Router();
 
@@ -34,6 +34,7 @@ usersRouter.patch(
   '/current/edit',
   protection,
   joiValidateDataMiddleware(editUserJoiSchema),
+  uploadAvatar,
   editUser,
 );
 

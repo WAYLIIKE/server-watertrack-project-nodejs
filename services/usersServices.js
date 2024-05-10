@@ -2,42 +2,41 @@ import { HttpError } from '../helpers/HttpError.js';
 import { User } from '../models/userModel.js';
 const { GEN_SALT_NUMBER } = process.env;
 import bcrypt from 'bcrypt';
+import gravatar from 'gravatar';
 import {
   createAccessToken,
   createRefreshToken,
   refreshTokenValidation,
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
+import { jimpService } from './jimpService.js';
 
-export const signUpUserService = async registerData => {
+export const signUpUserService = async (registerData) => {
   const { email, password } = registerData;
 
-  if (!email || !password)
-    throw new HttpError(
-      400,
-      'Please provide all required fields (email and password)',
-    );
-
-  await checkExistsiUserService({ email: email });
+  await checkExistsUserService({ email: email });
 
   registerData.name = email.split('@')[0];
   registerData.password = await hashPassword(password);
+  registerData.avatarURL = getGravatar(email);
 
   await User.create(registerData);
 };
 
-const checkExistsiUserService = async filter => {
+const checkExistsUserService = async (filter) => {
   const isUserExists = await User.exists(filter);
   if (isUserExists) throw new HttpError(400, 'Email in use');
 };
 
-const hashPassword = async data => {
+const hashPassword = async (data) => {
   const salt = await bcrypt.genSalt(+GEN_SALT_NUMBER);
   const hash = bcrypt.hash(data, salt);
   return hash;
 };
 
-export const signInService = async signData => {
+const getGravatar = (email) => gravatar.url(email, { d: 'identicon' });
+
+export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
@@ -65,11 +64,15 @@ export const findUserService = expressAsyncHandler(async (id, accessToken) => {
 });
 
 export const editUserService = expressAsyncHandler(
-  async (id, userEmail, newUserData) => {
-    const { email, name, gender, weight, activityTime, desiredVolume } =
-      newUserData;
+  async (id, userEmail, newUserData, file) => {
+    const { email } = newUserData;
 
-    if (userEmail !== email) await checkExistsiUserService({ email: email });
+    if (userEmail !== email) await checkExistsUserService({ email: email });
+
+    if (file) {
+      const newAvatarURL = await updateAvatar(id, file);
+      newUserData.avatarURL = newAvatarURL;
+    }
 
     const newUser = await User.findByIdAndUpdate(id, newUserData, {
       new: true,
@@ -78,19 +81,27 @@ export const editUserService = expressAsyncHandler(
   },
 );
 
-export const refreshService = async refreshData => {
+const updateAvatar = expressAsyncHandler(async (id, file) => {
+  const avatarURL = file.path.replace('public', '');
+
+  const newAvatarURL = await jimpService(id, avatarURL);
+
+  return newAvatarURL;
+});
+
+export const refreshService = async (refreshData) => {
   const { refreshToken: token } = refreshData;
 
   const user = await User.findOne({ refreshToken: token });
 
   if (!user) {
-    throw new HttpError(403, 'Token invalid'); //!!
+    throw new HttpError(401, 'Not authorized');
   }
 
   const id = refreshTokenValidation(token);
   const isExist = User.findOne({ token });
 
-  if (!isExist) throw new HttpError(403, 'Token invalid'); //!!
+  if (!isExist) throw new HttpError(401, 'Not authorized');
 
   const accessToken = createAccessToken(id);
   const refreshToken = createRefreshToken(id);
@@ -99,6 +110,6 @@ export const refreshService = async refreshData => {
   return { accessToken, refreshToken };
 };
 
-export const signoutService = async id => {
+export const signoutService = async (id) => {
   await User.findByIdAndUpdate(id, { accessToken: '', refreshToken: '' });
 };

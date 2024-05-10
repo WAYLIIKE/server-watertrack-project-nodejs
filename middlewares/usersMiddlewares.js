@@ -2,6 +2,8 @@ import expressAsyncHandler from 'express-async-handler';
 import { HttpError } from '../helpers/HttpError.js';
 import { tokenValidation } from '../services/jwtService.js';
 import { findUserService } from '../services/usersServices.js';
+import multer from 'multer';
+import { multerFilter, multerStorage } from '../services/multerService.js';
 
 export const protection = expressAsyncHandler(async (req, res, next) => {
   const { authorization } = req.headers;
@@ -17,3 +19,11 @@ export const protection = expressAsyncHandler(async (req, res, next) => {
   req.user = user;
   next();
 });
+
+export const uploadAvatar = multer({
+  storage: multerStorage,
+  filter: multerFilter,
+  limits: {
+    fieldSize: 2 * 1024 * 1024,
+  },
+}).single('avatar');
