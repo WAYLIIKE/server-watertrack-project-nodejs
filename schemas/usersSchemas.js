@@ -11,9 +11,18 @@ export const signUpJoiSchema = Joi.object({
     .min(8)
     .pattern(/^(?=.*[A-Z])(?=.*\d).*$/)
     .message(
-      'Password must be at least 8 characters long, contain at least one uppercase letter, and at least one digit'
+      'Password must be at least 8 characters long, contain at least one uppercase letter, and at least one digit',
     )
     .required(),
+});
+
+export const signInJoiSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+    })
+    .required(),
+  password: Joi.string().min(8).required(),
 });
 
 export const editUserJoiSchema = Joi.object({

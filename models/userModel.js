@@ -11,12 +11,18 @@ const userShema = new Schema(
       type: String,
       required: [true, 'Password is required'],
     },
-    avatarURL: String,
-    name: String,
-    gender: {
+    avatarURL: {
       type: String || null,
       default: null,
+    },
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+    },
+    gender: {
+      type: String || null,
       enum: ['Man', 'Woman'],
+      default: null,
     },
     weight: {
       type: Number,
@@ -28,16 +34,20 @@ const userShema = new Schema(
     },
     desiredVolume: {
       type: Number,
-      default: 0.5,
+      min: 100,
+      max: 5000,
+      default: 1500,
     },
     accessToken: {
       type: String,
+      default: '',
     },
     refreshToken: {
       type: String,
+      default: '',
     },
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true },
 );
 
 export const User = model('User', userShema);

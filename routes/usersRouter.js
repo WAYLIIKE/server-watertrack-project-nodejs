@@ -4,6 +4,7 @@ import {
   refreshJoiSchema,
   signUpJoiSchema,
   editUserJoiSchema,
+  signInJoiSchema,
 } from '../schemas/usersSchemas.js';
 import {
   currentUser,
@@ -17,22 +18,26 @@ import { protection } from '../middlewares/usersMiddlewares.js';
 const usersRouter = express.Router();
 
 usersRouter.post('/signup', joiValidateDataMiddleware(signUpJoiSchema), signUp);
-usersRouter.post('/signin', signIn);
+
+usersRouter.post('/signin', joiValidateDataMiddleware(signInJoiSchema), signIn);
 
 usersRouter.post(
   '/refresh',
   joiValidateDataMiddleware(refreshJoiSchema),
-  refresh
+  refresh,
 );
 
 usersRouter.get('/current', protection, currentUser);
+
 usersRouter.patch(
   '/current/edit',
   protection,
   joiValidateDataMiddleware(editUserJoiSchema),
-  editUser
+  editUser,
 );
+
 usersRouter.get('/current/refresh');
+
 usersRouter.post('/signout');
 
 export { usersRouter };
