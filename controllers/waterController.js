@@ -1,10 +1,10 @@
 import asyncHandler from 'express-async-handler';
 import { Water } from '../models/waterModel.js';
-import { updateWaterServices } from '../services/waterServices.js';
+import { addWater, updateWaterServices } from '../services/waterServices.js';
 
 export const createWater = asyncHandler(async (req, res, next) => {
-  const water = await Water.create(req.body);
-
+  // const water = await Water.create(req.body);
+  const water = await addWater(req.body, req.user);
   res.status(200).json(water);
 });
 

@@ -10,6 +10,5 @@ export const createWaterSchema = Joi.object()
 export const updateWaterSchema = Joi.object()
   .options({})
   .keys({
-    date: Joi.date().required(),
     amount: Joi.number().min(0.1).max(5000).required(),
   });
