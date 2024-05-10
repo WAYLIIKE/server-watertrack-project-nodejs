@@ -9,17 +9,16 @@ import {
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
 
-export const signUpUserService = async registerData => {
+export const signUpUserService = async (registerData) => {
   const { email, password } = registerData;
 
   if (!email || !password)
     throw new HttpError(
       400,
-      'Please provide all required fields (email and password)',
+      'Please provide all required fields (email and password)'
     );
 
-  const isUserExists = await checkExistsiUserService({ email: email });
-  if (isUserExists) throw new HttpError(400, 'Email in use');
+  await checkExistsiUserService({ email: email });
 
   registerData.name = email.split('@')[0];
   registerData.password = await hashPassword(password);
@@ -27,15 +26,18 @@ export const signUpUserService = async registerData => {
   await User.create(registerData);
 };
 
-const checkExistsiUserService = async filter => await User.exists(filter);
+const checkExistsiUserService = async (filter) => {
+  const isUserExists = await User.exists(filter);
+  if (isUserExists) throw new HttpError(400, 'Email in use');
+};
 
-const hashPassword = async data => {
+const hashPassword = async (data) => {
   const salt = await bcrypt.genSalt(+GEN_SALT_NUMBER);
   const hash = bcrypt.hash(data, salt);
   return hash;
 };
 
-export const signInService = async signData => {
+export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
@@ -53,28 +55,52 @@ export const signInService = async signData => {
 };
 
 export const findUserService = expressAsyncHandler(async (id, accessToken) => {
-  const user = await User.findById(id).select('-password');
+  const user = await User.findById(id).select('-password -refreshToken');
   if (!user) throw new HttpError(401, 'Not authorized');
 
   if (user.accessToken !== accessToken)
     throw new HttpError(401, 'Not authorized');
-  user.token = undefined;
+  user.accessToken = undefined;
   return user;
 });
 
-export const refreshService = async refreshData => {
+export const editUserService = expressAsyncHandler(
+  async (id, userEmail, newUserData) => {
+    const { email, name, gender, weight, activityTime, desiredVolume } =
+      newUserData;
+
+    if (
+      !email ||
+      !name ||
+      !gender ||
+      !weight ||
+      !activityTime ||
+      !desiredVolume
+    )
+      throw new HttpError(400, 'Please provide all fields on your profile');
+
+    if (userEmail !== email) await checkExistsiUserService({ email: email });
+
+    const newUser = await User.findByIdAndUpdate(id, newUserData, {
+      new: true,
+    }).select('-password -refreshToken -accessToken');
+    return newUser;
+  }
+);
+
+export const refreshService = async (refreshData) => {
   const { refreshToken: token } = refreshData;
 
   const user = await User.findOne({ refreshToken: token });
 
   if (!user) {
-    throw new HttpError(403, 'Token invalid');
+    throw new HttpError(403, 'Token invalid'); //!!
   }
 
   const id = refreshTokenValidation(token);
   const isExist = User.findOne({ token });
 
-  if (!isExist) throw new HttpError(403, 'Token invalid');
+  if (!isExist) throw new HttpError(403, 'Token invalid'); //!!
 
   const accessToken = createAccessToken(id);
   const refreshToken = createRefreshToken(id);
