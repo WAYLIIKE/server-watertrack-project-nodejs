@@ -55,12 +55,12 @@ export const signInService = async signData => {
 };
 
 export const findUserService = expressAsyncHandler(async (id, accessToken) => {
-  const user = await User.findById(id).select('-password -refreshToken');
+  const user = await User.findById(id).select('-password');
   if (!user) throw new HttpError(401, 'Not authorized');
 
   if (user.accessToken !== accessToken)
     throw new HttpError(401, 'Not authorized');
-  user.accessToken = undefined;
+
   return user;
 });
 
@@ -97,4 +97,8 @@ export const refreshService = async refreshData => {
 
   await User.findByIdAndUpdate(id, { accessToken, refreshToken });
   return { accessToken, refreshToken };
+};
+
+export const signoutService = async id => {
+  await User.findByIdAndUpdate(id, { accessToken: '', refreshToken: '' });
 };

@@ -4,6 +4,7 @@ import {
   refreshService,
   signInService,
   signUpUserService,
+  signoutService,
 } from '../services/usersServices.js';
 
 export const signUp = expressAsyncHandler(async (req, res) => {
@@ -23,7 +24,12 @@ export const signIn = expressAsyncHandler(async (req, res) => {
 });
 
 export const currentUser = (req, res) => {
-  res.status(200).json({ user: req.user });
+  const user = req.user;
+
+  user.accessToken = undefined;
+  user.refreshToken = undefined;
+
+  res.status(200).json({ user });
 };
 
 export const editUser = expressAsyncHandler(async (req, res) => {
@@ -41,4 +47,12 @@ export const refresh = expressAsyncHandler(async (req, res) => {
     accessToken,
     refreshToken,
   });
+});
+
+export const signOut = expressAsyncHandler(async (req, res) => {
+  const { _id } = req.user;
+
+  await signoutService(_id);
+
+  res.status(200).json({ message: 'Successful signout.' });
 });

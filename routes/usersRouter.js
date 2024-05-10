@@ -12,6 +12,7 @@ import {
   signUp,
   refresh,
   editUser,
+  signOut,
 } from '../controllers/usersController.js';
 import { protection } from '../middlewares/usersMiddlewares.js';
 
@@ -21,13 +22,13 @@ usersRouter.post('/signup', joiValidateDataMiddleware(signUpJoiSchema), signUp);
 
 usersRouter.post('/signin', joiValidateDataMiddleware(signInJoiSchema), signIn);
 
+usersRouter.get('/current', protection, currentUser);
+
 usersRouter.post(
-  '/refresh',
+  '/current/refresh',
   joiValidateDataMiddleware(refreshJoiSchema),
   refresh,
 );
-
-usersRouter.get('/current', protection, currentUser);
 
 usersRouter.patch(
   '/current/edit',
@@ -36,8 +37,6 @@ usersRouter.patch(
   editUser,
 );
 
-usersRouter.get('/current/refresh');
-
-usersRouter.post('/signout');
+usersRouter.post('/signout', protection, signOut);
 
 export { usersRouter };
