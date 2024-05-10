@@ -68,17 +68,7 @@ export const editUserService = expressAsyncHandler(
   async (id, userEmail, newUserData) => {
     const { email, name, gender, weight, activityTime, desiredVolume } =
       newUserData;
-
-    if (
-      !email ||
-      !name ||
-      !gender ||
-      !weight ||
-      !activityTime ||
-      !desiredVolume
-    )
-      throw new HttpError(400, 'Please provide all fields on your profile');
-
+    
     if (userEmail !== email) await checkExistsiUserService({ email: email });
 
     const newUser = await User.findByIdAndUpdate(id, newUserData, {
