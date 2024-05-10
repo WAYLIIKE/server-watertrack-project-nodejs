@@ -1,11 +1,16 @@
 import express from 'express';
 import { joiValidateDataMiddleware } from '../middlewares/joiValidatorMiddleware.js';
-import { refreshJoiSchema, signUpJoiSchema } from '../schemas/usersSchemas.js';
 import {
-  current,
+  refreshJoiSchema,
+  signUpJoiSchema,
+  editUserJoiSchema,
+} from '../schemas/usersSchemas.js';
+import {
+  currentUser,
   signIn,
   signUp,
   refresh,
+  editUser,
 } from '../controllers/usersController.js';
 import { protection } from '../middlewares/usersMiddlewares.js';
 
@@ -17,11 +22,16 @@ usersRouter.post('/signin', signIn);
 usersRouter.post(
   '/refresh',
   joiValidateDataMiddleware(refreshJoiSchema),
-  refresh,
+  refresh
 );
 
-usersRouter.get('/current', protection, current);
-usersRouter.patch('/current/edit');
+usersRouter.get('/current', protection, currentUser);
+usersRouter.patch(
+  '/current/edit',
+  protection,
+  joiValidateDataMiddleware(editUserJoiSchema),
+  editUser
+);
 usersRouter.get('/current/refresh');
 usersRouter.post('/signout');
 

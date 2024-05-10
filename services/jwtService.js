@@ -8,17 +8,17 @@ const {
   JWT_REF_EXPIRES_IN,
 } = process.env;
 
-export const createAccessToken = id =>
+export const createAccessToken = (id) =>
   jwt.sign({ id }, ACCESS_SECRET, {
     expiresIn: JWT_ACC_EXPIRES_IN,
   });
 
-export const createRefreshToken = id =>
+export const createRefreshToken = (id) =>
   jwt.sign({ id }, REFRESH_SECRET, {
     expiresIn: JWT_REF_EXPIRES_IN,
   });
 
-export const tokenValidation = accessToken => {
+export const tokenValidation = (accessToken) => {
   if (!accessToken) throw new HttpError(401, 'Not authorized');
 
   try {
@@ -30,14 +30,14 @@ export const tokenValidation = accessToken => {
   }
 };
 
-export const refreshTokenValidation = refreshToken => {
-  if (!refreshToken) throw new HttpError(403, error.message);
+export const refreshTokenValidation = (refreshToken) => {
+  if (!refreshToken) throw new HttpError(403, error.message); //!
 
   try {
     const { id } = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
 
     return id;
   } catch (error) {
-    throw new HttpError(403, error.message);
+    throw new HttpError(403, error.message); //!
   }
 };

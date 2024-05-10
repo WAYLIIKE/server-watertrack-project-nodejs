@@ -22,13 +22,13 @@ const userShema = new Schema(
       type: Number,
       default: 0,
     },
-    avtivityTime: {
+    activityTime: {
       type: Number,
       default: 0,
     },
     desiredVolume: {
       type: Number,
-      default: 1.5,
+      default: 0.5,
     },
     accessToken: {
       type: String,
@@ -37,7 +37,7 @@ const userShema = new Schema(
       type: String,
     },
   },
-  { versionKey: false },
+  { versionKey: false }
 );
 
 export const User = model('User', userShema);
