@@ -14,7 +14,7 @@ export const jimpService = expressAsyncHandler(async (id, avatarURL) => {
     avatar.resize(100, 100).write(path.join(filePath, fileName));
   });
 
-  // await fs.rm(avatarURL);
+  await fs.rm(avatarURL);
 
   return path.join('avatars', fileName);
 });
