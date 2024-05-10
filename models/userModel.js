@@ -30,9 +30,11 @@ const userShema = new Schema(
       type: Number,
       default: 1.5,
     },
-    token: {
+    accessToken: {
       type: String,
-      default: null,
+    },
+    refreshToken: {
+      type: String,
     },
   },
   { versionKey: false },

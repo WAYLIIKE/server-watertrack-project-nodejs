@@ -16,3 +16,7 @@ export const signUpJoiSchema = Joi.object({
     )
     .required(),
 });
+
+export const refreshJoiSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});

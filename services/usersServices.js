@@ -2,7 +2,11 @@ import { HttpError } from '../helpers/HttpError.js';
 import { User } from '../models/userModel.js';
 const { GEN_SALT_NUMBER } = process.env;
 import bcrypt from 'bcrypt';
-import { createToken } from './jwtService.js';
+import {
+  createAccessToken,
+  createRefreshToken,
+  refreshTokenValidation,
+} from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
 
 export const signUpUserService = async registerData => {
@@ -40,11 +44,12 @@ export const signInService = async signData => {
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) throw new HttpError(401, 'Email or password is wrong');
 
-  const token = createToken(user.id);
+  const accessToken = createAccessToken(user.id);
+  const refreshToken = createRefreshToken(user.id);
 
-  await User.findByIdAndUpdate(user.id, { token: token });
+  await User.findByIdAndUpdate(user.id, { accessToken, refreshToken });
 
-  return token;
+  return { accessToken, refreshToken };
 };
 
 export const findUserService = expressAsyncHandler(async (id, token) => {
@@ -55,3 +60,24 @@ export const findUserService = expressAsyncHandler(async (id, token) => {
   user.token = undefined;
   return user;
 });
+
+export const refreshService = async refreshData => {
+  const { refreshToken: token } = refreshData;
+
+  const user = await User.findOne({ refreshToken: token });
+
+  if (!user) {
+    throw new HttpError(403, 'Token invalid');
+  }
+
+  const id = refreshTokenValidation(token);
+  const isExist = User.findOne({ token });
+
+  if (!isExist) throw new HttpError(403, 'Token invalid');
+
+  const accessToken = createAccessToken(id);
+  const refreshToken = createRefreshToken(id);
+
+  await User.findByIdAndUpdate(id, { accessToken, refreshToken });
+  return { accessToken, refreshToken };
+};

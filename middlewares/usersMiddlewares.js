@@ -12,7 +12,7 @@ export const protection = expressAsyncHandler(async (req, res, next) => {
 
   if (!id) throw new HttpError(401, 'Not authorized');
 
-  const user = await findUserService(id, token);
+  const user = await findUserService(id, accessToken);
 
   req.user = user;
   next();
