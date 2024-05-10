@@ -22,7 +22,7 @@ export const protection = expressAsyncHandler(async (req, res, next) => {
 
 export const uploadAvatar = multer({
   storage: multerStorage,
-  filter: multerFilter,
+  fileFilter: multerFilter,
   limits: {
     fieldSize: 2 * 1024 * 1024,
   },
