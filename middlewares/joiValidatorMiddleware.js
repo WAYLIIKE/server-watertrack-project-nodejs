@@ -1,6 +1,6 @@
-import { HttpError } from "../helpers/HttpError.js";
+import { HttpError } from '../helpers/HttpError.js';
 
-export const joiValidateDataMiddleware = (JoiSchema) => {
+export const joiValidateDataMiddleware = JoiSchema => {
   return (req, res, next) => {
     const { error } = JoiSchema.validate(req.body);
     if (error)

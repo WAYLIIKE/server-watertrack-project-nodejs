@@ -37,7 +37,7 @@ const userShema = new Schema(
       type: String,
     },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
 export const User = model('User', userShema);

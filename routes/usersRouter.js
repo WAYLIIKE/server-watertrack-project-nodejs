@@ -17,7 +17,7 @@ usersRouter.post('/signin', signIn);
 usersRouter.post(
   '/refresh',
   joiValidateDataMiddleware(refreshJoiSchema),
-  refresh
+  refresh,
 );
 
 usersRouter.get('/current', protection, current);
