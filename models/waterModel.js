@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 
 const waterSchema = Schema(
   {
@@ -13,12 +13,12 @@ const waterSchema = Schema(
       required: true,
     },
     owner: {
-      type: Schema.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'User',
       required: true,
     },
   },
-  { versionKey: false, timestamps: true },
+  { versionKey: false, timestamps: true }
 );
 
 export const Water = model('Water', waterSchema);
