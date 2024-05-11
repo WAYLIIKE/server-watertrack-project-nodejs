@@ -38,3 +38,44 @@ export const deleteWater = asyncHandler(async (req, res) => {
 
   res.status(200).json(result);
 });
+
+export const getDayWater = asyncHandler(async (req, res) => {
+  const { _id: owner } = req.user;
+
+  const date = new Date(+req.params.date);
+
+  const userTimezoneOffset = req.user.timezoneOffset || 0;
+
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0 - userTimezoneOffset / 60, 0, 0, 0);
+
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23 - userTimezoneOffset / 60, 59, 59, 999);
+
+  const utcStart = startOfDay.toISOString();
+  const utcEnd = endOfDay.toISOString();
+
+  const foundWaterDayData = await Water.find({
+    owner,
+    date: {
+      $gte: utcStart,
+      $lt: utcEnd,
+    },
+  }).select('-createdAt -updatedAt');
+
+  if (!foundWaterDayData) {
+    throw HttpError(404, `Info for this day not found`);
+  }
+
+  const totalDayWater = foundWaterDayData.reduce(
+    (acc, item) => acc + item.amount,
+    0,
+  );
+
+  res.status(200).json({
+    date,
+    totalDayWater,
+    consumedWaterData: foundWaterDayData,
+    owner,
+  });
+});

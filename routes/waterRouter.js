@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createWater,
   deleteWater,
+  getDayWater,
   updateWater,
 } from '../controllers/waterController.js';
 import { joiValidateDataMiddleware } from '../middlewares/joiValidatorMiddleware.js';
@@ -10,7 +11,10 @@ import {
   updateWaterSchema,
 } from '../schemas/waterSchemas.js';
 import { protection } from '../middlewares/usersMiddlewares.js';
-import { checkWaterId } from '../middlewares/waterMiddlewares.js';
+import {
+  checkWaterDate,
+  checkWaterId,
+} from '../middlewares/waterMiddlewares.js';
 
 const waterRouter = express.Router();
 
@@ -31,6 +35,6 @@ waterRouter.put(
 
 waterRouter.delete('/remove/:id', protection, checkWaterId, deleteWater);
 
-waterRouter.get('/day/:date', protection);
+waterRouter.get('/day/:date', protection, checkWaterDate, getDayWater);
 
 export { waterRouter };

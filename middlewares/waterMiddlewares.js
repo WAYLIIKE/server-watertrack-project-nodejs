@@ -10,3 +10,21 @@ export const checkWaterId = expressAsyncHandler((req, res, next) => {
 
   next();
 });
+
+export const checkWaterDate = expressAsyncHandler((req, res, next) => {
+  const { date } = req.params;
+
+  const startDate = 1704067200000;
+
+  const currentDate = new Date();
+  const unixCurrentDate = currentDate.getTime();
+
+  if (isNaN(+date) || !Number.isInteger(+date)) throw new HttpError(400);
+
+  if (date < startDate)
+    throw new HttpError(400, 'Date must start from 2024/01/01');
+
+  if (date > unixCurrentDate) throw new HttpError(400, 'Date from future');
+
+  next();
+});

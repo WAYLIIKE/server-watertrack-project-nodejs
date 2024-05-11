@@ -1,6 +1,6 @@
 import { Schema, model, Types } from 'mongoose';
 
-const waterSchema = Schema(
+const waterSchema = new Schema(
   {
     date: {
       type: Date,
