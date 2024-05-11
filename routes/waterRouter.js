@@ -1,32 +1,36 @@
 import express from 'express';
-import { createWater, updateWater } from '../controllers/waterController.js';
+import {
+  createWater,
+  deleteWater,
+  updateWater,
+} from '../controllers/waterController.js';
 import { joiValidateDataMiddleware } from '../middlewares/joiValidatorMiddleware.js';
 import {
   createWaterSchema,
   updateWaterSchema,
 } from '../schemas/waterSchemas.js';
 import { protection } from '../middlewares/usersMiddlewares.js';
+import { checkWaterId } from '../middlewares/waterMiddlewares.js';
 
 const waterRouter = express.Router();
-
-waterRouter.post('/add');
 
 waterRouter.post(
   '/add',
   protection,
   joiValidateDataMiddleware(createWaterSchema),
-  createWater
+  createWater,
 );
 
 waterRouter.put(
   '/edit/:id',
   protection,
+  checkWaterId,
   joiValidateDataMiddleware(updateWaterSchema),
-  updateWater
+  updateWater,
 );
 
-waterRouter.delete('/remove/:id');
+waterRouter.delete('/remove/:id', protection, checkWaterId, deleteWater);
 
-waterRouter.get('/day/:date');
+waterRouter.get('/day/:date', protection);
 
 export { waterRouter };

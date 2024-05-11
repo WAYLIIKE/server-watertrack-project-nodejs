@@ -8,8 +8,8 @@ const waterSchema = Schema(
     },
     amount: {
       type: Number,
-      min: 0.1,
-      max: 5000,
+      min: 10,
+      max: 2000,
       required: true,
     },
     owner: {
@@ -18,7 +18,7 @@ const waterSchema = Schema(
       required: true,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true },
 );
 
 export const Water = model('Water', waterSchema);

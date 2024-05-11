@@ -12,7 +12,7 @@ const userShema = new Schema(
       required: [true, 'Password is required'],
     },
     avatarURL: {
-      type: String || null, //!!
+      type: String || null,
       default: null,
     },
     name: {
@@ -20,7 +20,7 @@ const userShema = new Schema(
       required: [true, 'Name is required'],
     },
     gender: {
-      type: String || null, //!!
+      type: String || null,
       enum: ['Man', 'Woman'],
       default: null,
     },
