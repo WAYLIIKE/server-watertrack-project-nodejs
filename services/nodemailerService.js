@@ -19,7 +19,7 @@ export const nodemailerService = async (verificationToken, email) => {
     });
 
     const emailConfig = {
-      from: `aquatrack@ukr.net`,
+      from: MAIL_SERVICE_USER,
       to: email,
       subject: 'Email verification',
       text: `Veirify your emai. http://localhost:3000/api/users/verify/${verificationToken}`, //! DEV ONLY
