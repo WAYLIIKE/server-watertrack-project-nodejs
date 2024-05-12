@@ -10,6 +10,8 @@ import {
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
 import { jimpService } from './jimpService.js';
+import { v4 } from 'uuid';
+import { nodemailerService } from './nodemailerService.js';
 
 export const signUpUserService = async (registerData) => {
   const { email, password } = registerData;
@@ -19,6 +21,13 @@ export const signUpUserService = async (registerData) => {
   registerData.name = email.split('@')[0];
   registerData.password = await hashPassword(password);
   registerData.avatarURL = getGravatar(email);
+  registerData.verificationToken = v4();
+
+  const isEmailSended = await nodemailerService(
+    registerData.verificationToken,
+    email,
+  );
+  if (!isEmailSended) throw new HttpError(500, 'Oops, something went wrong :(');
 
   await User.create(registerData);
 };
@@ -36,11 +45,23 @@ const hashPassword = async (data) => {
 
 const getGravatar = (email) => gravatar.url(email, { d: 'identicon' });
 
+export const verifyService = async (verificationToken) => {
+  const user = await User.findOneAndUpdate(
+    { verificationToken: verificationToken },
+    { verification: true, verificationToken: null },
+  );
+
+  if (!user) throw new HttpError(400, 'User not found');
+};
+
 export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
   if (!user) throw new HttpError(401, 'Email or password is wrong');
+
+  if (user.verificationz !== true)
+    throw new HttpError(401, 'Please, verify your email');
 
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) throw new HttpError(401, 'Email or password is wrong');

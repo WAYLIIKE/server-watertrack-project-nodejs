@@ -5,14 +5,21 @@ import {
   signInService,
   signUpUserService,
   signoutService,
+  verifyService,
 } from '../services/usersServices.js';
 
 export const signUp = expressAsyncHandler(async (req, res) => {
   await signUpUserService(req.body);
 
   res.status(201).json({
-    message: 'Created',
+    message: 'Verification link has been sent to your email',
   });
+});
+
+export const verification = expressAsyncHandler(async (req, res) => {
+  const { verificationToken } = req.params;
+  await verifyService(verificationToken);
+  res.status(200).json({ message: 'Verification sucsessfull' });
 });
 
 export const signIn = expressAsyncHandler(async (req, res) => {

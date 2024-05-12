@@ -46,6 +46,13 @@ const userShema = new Schema(
       type: String,
       default: '',
     },
+    verification: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
   },
   { versionKey: false, timestamps: true },
 );

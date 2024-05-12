@@ -13,12 +13,15 @@ import {
   refresh,
   editUser,
   signOut,
+  verification,
 } from '../controllers/usersController.js';
 import { protection, uploadAvatar } from '../middlewares/usersMiddlewares.js';
 
 const usersRouter = express.Router();
 
 usersRouter.post('/signup', joiValidateDataMiddleware(signUpJoiSchema), signUp);
+
+usersRouter.get('/verify/:verificationToken', verification);
 
 usersRouter.post('/signin', joiValidateDataMiddleware(signInJoiSchema), signIn);
 
