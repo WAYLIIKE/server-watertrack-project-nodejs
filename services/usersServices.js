@@ -43,7 +43,8 @@ const hashPassword = async (data) => {
   return hash;
 };
 
-const getGravatar = (email) => gravatar.url(email, { d: 'identicon' });
+const getGravatar = (email) =>
+  gravatar.url(email, { d: 'identicon', s: '100' });
 
 export const verifyService = async (verificationToken) => {
   const user = await User.findOneAndUpdate(
