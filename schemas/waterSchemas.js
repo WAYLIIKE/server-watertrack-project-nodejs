@@ -1,11 +1,21 @@
 import Joi from 'joi';
 
-export const createWaterSchema = Joi.object({
-  date: Joi.date().required(),
-  amount: Joi.number().min(10).max(2000).required(),
-});
+const startDate = new Date('01/01/2024');
 
-export const updateWaterSchema = Joi.object({
-  date: Joi.date(),
-  amount: Joi.number().min(10).max(2000).required(),
-});
+export const createWaterSchema = () => {
+  const nowDate = new Date();
+
+  return Joi.object({
+    date: Joi.number().min(+startDate).max(+nowDate).required(),
+    amount: Joi.number().min(10).max(2000).required(),
+  });
+};
+
+export const updateWaterSchema = () => {
+  const nowDate = new Date();
+
+  return Joi.object({
+    date: Joi.number().min(+startDate).max(+nowDate),
+    amount: Joi.number().min(10).max(2000),
+  }).or('date', 'amount');
+};

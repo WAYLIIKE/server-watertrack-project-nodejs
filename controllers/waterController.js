@@ -43,6 +43,7 @@ export const getDayWater = asyncHandler(async (req, res) => {
   const { _id: owner } = req.user;
 
   const date = new Date(+req.params.date);
+  console.log(date);
 
   const userTimezoneOffset = req.user.timezoneOffset || 0;
 
@@ -52,8 +53,10 @@ export const getDayWater = asyncHandler(async (req, res) => {
   const endOfDay = new Date(date);
   endOfDay.setHours(23 - userTimezoneOffset / 60, 59, 59, 999);
 
-  const utcStart = startOfDay.toISOString();
-  const utcEnd = endOfDay.toISOString();
+  const utcStart = startOfDay.getTime();
+  const utcEnd = endOfDay.getTime();
+
+  // console.log(utcEnd.toString().toISOString());
 
   const foundWaterDayData = await Water.find({
     owner,
@@ -71,6 +74,11 @@ export const getDayWater = asyncHandler(async (req, res) => {
     (acc, item) => acc + item.amount,
     0,
   );
+
+  console.log({ date });
+  console.log({ totalDayWater });
+  console.log({ foundWaterDayData });
+  console.log({ owner });
 
   res.status(200).json({
     date,

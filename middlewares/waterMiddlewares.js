@@ -13,6 +13,7 @@ export const checkWaterId = expressAsyncHandler((req, res, next) => {
 
 export const checkWaterDate = expressAsyncHandler((req, res, next) => {
   const { date } = req.params;
+  console.log(date);
 
   const startDate = 1704067200000;
 

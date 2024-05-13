@@ -1,9 +1,13 @@
 import { Schema, model, Types } from 'mongoose';
 
+const startDate = new Date('01/01/2024');
+
 const waterSchema = new Schema(
   {
     date: {
-      type: Date,
+      type: Number,
+      min: +startDate,
+      max: Date.now(),
       required: true,
     },
     amount: {

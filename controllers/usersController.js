@@ -11,7 +11,7 @@ export const signUp = expressAsyncHandler(async (req, res) => {
   await signUpUserService(req.body);
 
   res.status(201).json({
-    message: 'Created',
+    message: 'Successfully created',
   });
 });
 
@@ -54,5 +54,5 @@ export const signOut = expressAsyncHandler(async (req, res) => {
 
   await signoutService(_id);
 
-  res.status(200).json({ message: 'Successful signout.' });
+  res.status(200).json({ message: 'Successful signout' });
 });

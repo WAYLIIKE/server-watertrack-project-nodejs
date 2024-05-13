@@ -33,8 +33,8 @@ usersRouter.post(
 usersRouter.patch(
   '/current/edit',
   protection,
-  joiValidateDataMiddleware(editUserJoiSchema),
   uploadAvatar,
+  joiValidateDataMiddleware(editUserJoiSchema),
   editUser,
 );
 
