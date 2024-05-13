@@ -10,11 +10,20 @@ export const jimpService = expressAsyncHandler(async (id, avatarURL) => {
   const fileName = `${id}-${v4()}.${extention}`;
   const filePath = path.join(process.cwd(), 'public', 'avatars');
 
+  const files = await fs.readdir(filePath);
+  if (files.length > 0) {
+    for (const file of files) {
+      if (file !== '.gitkeep') {
+        await fs.unlink(path.join(filePath, file));
+      }
+    }
+  }
+
   Jimp.read(avatarURL, (err, avatar) => {
     avatar.resize(100, 100).write(path.join(filePath, fileName));
   });
 
-  await fs.rm(avatarURL);
+  await fs.unlink(avatarURL);
 
   return path.join('avatars', fileName);
 });
