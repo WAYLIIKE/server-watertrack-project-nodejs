@@ -5,6 +5,7 @@ const {
   MAIL_SERVICE_PASS,
 } = process.env;
 import nodemailer from 'nodemailer';
+import { HttpError } from '../helpers/HttpError.js';
 
 export const nodemailerService = async (verificationToken, email) => {
   try {
@@ -28,8 +29,7 @@ export const nodemailerService = async (verificationToken, email) => {
     };
 
     await emailTransporter.sendMail(emailConfig);
-    return true;
   } catch (error) {
-    return false;
+    throw new HttpError(500, error);
   }
 };

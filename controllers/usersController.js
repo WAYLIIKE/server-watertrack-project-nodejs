@@ -2,6 +2,7 @@ import expressAsyncHandler from 'express-async-handler';
 import {
   editUserService,
   refreshService,
+  resendEmailService,
   signInService,
   signUpUserService,
   signoutService,
@@ -20,6 +21,15 @@ export const verification = expressAsyncHandler(async (req, res) => {
   const { verificationToken } = req.params;
   await verifyService(verificationToken);
   res.status(200).json({ message: 'Verification sucsessfull' });
+});
+
+export const resendEmail = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  await resendEmailService(email);
+
+  res
+    .status(200)
+    .json({ message: 'Verification link has been resent to your email' });
 });
 
 export const signIn = expressAsyncHandler(async (req, res) => {

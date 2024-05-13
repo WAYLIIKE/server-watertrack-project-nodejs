@@ -16,6 +16,15 @@ export const signUpJoiSchema = Joi.object({
     .required(),
 });
 
+export const checkEmailJoiSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { deny: ['ru', 'su'] },
+    })
+    .required(),
+});
+
 export const signInJoiSchema = Joi.object({
   email: Joi.string()
     .email({

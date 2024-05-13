@@ -23,11 +23,7 @@ export const signUpUserService = async (registerData) => {
   registerData.avatarURL = getGravatar(email);
   registerData.verificationToken = v4();
 
-  const isEmailSended = await nodemailerService(
-    registerData.verificationToken,
-    email,
-  );
-  if (!isEmailSended) throw new HttpError(500, 'Oops, something went wrong :(');
+  await nodemailerService(registerData.verificationToken, email);
 
   await User.create(registerData);
 };
@@ -55,13 +51,24 @@ export const verifyService = async (verificationToken) => {
   if (!user) throw new HttpError(400, 'User not found');
 };
 
+export const resendEmailService = async (email) => {
+  const { verification, verificationToken } = await User.findOne({
+    email: email,
+  });
+
+  if (verification === true)
+    throw new HttpError(400, 'Your email already verificated');
+
+  await nodemailerService(verificationToken, email);
+};
+
 export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
   if (!user) throw new HttpError(401, 'Email or password is wrong');
 
-  if (user.verificationz !== true)
+  if (user.verification !== true)
     throw new HttpError(401, 'Please, verify your email');
 
   const isValidPassword = await bcrypt.compare(password, user.password);
