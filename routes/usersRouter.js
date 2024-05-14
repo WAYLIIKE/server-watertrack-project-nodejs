@@ -13,6 +13,7 @@ import {
   refresh,
   editUser,
   signOut,
+  countUser,
 } from '../controllers/usersController.js';
 import { protection, uploadAvatar } from '../middlewares/usersMiddlewares.js';
 
@@ -27,7 +28,7 @@ usersRouter.get('/current', protection, currentUser);
 usersRouter.post(
   '/current/refresh',
   joiValidateDataMiddleware(refreshJoiSchema),
-  refresh,
+  refresh
 );
 
 usersRouter.patch(
@@ -35,9 +36,11 @@ usersRouter.patch(
   protection,
   uploadAvatar,
   joiValidateDataMiddleware(editUserJoiSchema),
-  editUser,
+  editUser
 );
 
 usersRouter.post('/signout', protection, signOut);
+
+usersRouter.get('/count', countUser);
 
 export { usersRouter };

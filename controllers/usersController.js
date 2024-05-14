@@ -1,5 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 import {
+  countServices,
   editUserService,
   refreshService,
   signInService,
@@ -55,4 +56,11 @@ export const signOut = expressAsyncHandler(async (req, res) => {
   await signoutService(_id);
 
   res.status(200).json({ message: 'Successful signout' });
+});
+
+export const countUser = expressAsyncHandler(async (req, res) => {
+  const count = await countServices();
+  res.status(200).json({
+    count,
+  });
 });
