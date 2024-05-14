@@ -78,7 +78,7 @@ export const editUserService = expressAsyncHandler(
       new: true,
     }).select('-password -refreshToken -accessToken');
     return newUser;
-  }
+  },
 );
 
 const updateAvatar = expressAsyncHandler(async (id, file) => {

@@ -28,7 +28,7 @@ usersRouter.get('/current', protection, currentUser);
 usersRouter.post(
   '/current/refresh',
   joiValidateDataMiddleware(refreshJoiSchema),
-  refresh
+  refresh,
 );
 
 usersRouter.patch(
@@ -36,7 +36,7 @@ usersRouter.patch(
   protection,
   uploadAvatar,
   joiValidateDataMiddleware(editUserJoiSchema),
-  editUser
+  editUser,
 );
 
 usersRouter.post('/signout', protection, signOut);
