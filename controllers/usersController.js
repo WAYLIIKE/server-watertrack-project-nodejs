@@ -16,8 +16,12 @@ export const signUp = expressAsyncHandler(async (req, res) => {
 });
 
 export const signIn = expressAsyncHandler(async (req, res) => {
-  const { accessToken, refreshToken } = await signInService(req.body);
+  const { finalUser, accessToken, refreshToken } = await signInService(
+    req.body,
+  );
+
   res.status(200).json({
+    user: finalUser,
     accessToken,
     refreshToken,
   });

@@ -48,9 +48,12 @@ export const signInService = async signData => {
   const accessToken = createAccessToken(user.id);
   const refreshToken = createRefreshToken(user.id);
 
-  await User.findByIdAndUpdate(user.id, { accessToken, refreshToken });
+  const finalUser = await User.findByIdAndUpdate(user.id, {
+    accessToken,
+    refreshToken,
+  }).select('-password -accessToken -refreshToken');
 
-  return { accessToken, refreshToken };
+  return { finalUser, accessToken, refreshToken };
 };
 
 export const findUserService = expressAsyncHandler(async (id, accessToken) => {
