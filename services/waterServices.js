@@ -6,5 +6,4 @@ export const addWaterService = ({ date, amount }, owner) =>
 export const updateWaterService = (data, body) =>
   Water.findOneAndUpdate(data, body, { new: true });
 
-export const deleteWaterService = data =>
-  Water.findOneAndDelete(data).select('-createdAt -updatedAt');
+export const deleteWaterService = data => Water.findOneAndDelete(data);
