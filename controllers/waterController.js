@@ -6,6 +6,7 @@ import {
   updateWaterService,
 } from '../services/waterServices.js';
 import { HttpError } from '../helpers/HttpError.js';
+import { endOfMonth, startOfMonth } from 'date-fns';
 
 export const createWater = asyncHandler(async (req, res, next) => {
   // const water = await Water.create(req.body);
@@ -78,4 +79,50 @@ export const getDayWater = asyncHandler(async (req, res) => {
     consumedWaterData: foundWaterDayData,
     owner,
   });
+});
+
+export const getMonthWater = asyncHandler(async (req, res) => {
+  const { _id: owner } = req.user;
+  const date = new Date(+req.params.date); // Припустимо, що date у форматі Unix timestamp
+
+  const userTimezoneOffset = req.user.timezoneOffset || 0;
+
+  const startOfMonthDate = startOfMonth(date);
+  const endOfMonthDate = endOfMonth(date);
+
+  const startOfDay = new Date(startOfMonthDate);
+  startOfDay.setHours(0 - userTimezoneOffset / 60, 0, 0, 0);
+
+  const endOfDay = new Date(endOfMonthDate);
+  endOfDay.setHours(23 - userTimezoneOffset / 60, 59, 59, 999);
+
+  const utcStart = startOfDay.getTime();
+  const utcEnd = endOfDay.getTime();
+
+  const foundWaterMonthData = await Water.find({
+    owner,
+    date: {
+      $gte: utcStart,
+      $lt: utcEnd,
+    },
+  });
+
+  const aggregatedData = foundWaterMonthData.reduce((acc, item) => {
+    const date = new Date(item.date);
+    const day = date.getDate();
+
+    if (!acc[day]) {
+      acc[day] = {
+        date: new Date(date.setHours(0, 0, 0, 0)).toISOString(),
+        totalDayWater: 0,
+      };
+    }
+    acc[day].totalDayWater += item.amount;
+
+    return acc;
+  }, {});
+
+  const result = Object.values(aggregatedData);
+
+  res.status(200).json(result);
 });
