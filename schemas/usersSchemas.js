@@ -49,16 +49,7 @@ export const editUserJoiSchema = Joi.object({
     'number.max': 'Please enter below 100 and 5000 ml',
     'number.integer': 'Vater volume value must be integer',
   }),
-  avatar: Joi.string(),
-}).or(
-  'email',
-  'name',
-  'gender',
-  'weight',
-  'activityTime',
-  'desiredVolume',
-  'avatar',
-);
+}).or('email', 'name', 'gender', 'weight', 'activityTime', 'desiredVolume');
 
 export const refreshJoiSchema = Joi.object({
   refreshToken: Joi.string().required(),
