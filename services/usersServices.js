@@ -80,7 +80,9 @@ export const signInService = async (signData) => {
   const finalUser = await User.findByIdAndUpdate(user.id, {
     accessToken,
     refreshToken,
-  }).select('-password -accessToken -refreshToken');
+  }).select(
+    '-password -accessToken -refreshToken -verification -verificationToken',
+  );
 
   return { finalUser, accessToken, refreshToken };
 };
@@ -108,7 +110,9 @@ export const editUserService = expressAsyncHandler(
 
     const newUser = await User.findByIdAndUpdate(id, newUserData, {
       new: true,
-    }).select('-password -refreshToken -accessToken');
+    }).select(
+      '-password -refreshToken -accessToken -verification -verificationToken',
+    );
     return newUser;
   },
 );
