@@ -17,7 +17,7 @@ mongoose
   .then(() => {
     console.log('Database connection successful');
   })
-  .catch(error => {
+  .catch((error) => {
     console.log(error);
     process.exit(1);
   });
@@ -26,7 +26,6 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
-app.use(express.static('public'));
 
 app.use('/api/water', waterRouter);
 app.use('/api/users', usersRouter);

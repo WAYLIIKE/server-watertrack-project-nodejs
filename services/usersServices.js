@@ -9,9 +9,9 @@ import {
   refreshTokenValidation,
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
-import { jimpService } from './jimpService.js';
+import { cloudinaryService } from './cloudinaryService.js';
 
-export const signUpUserService = async registerData => {
+export const signUpUserService = async (registerData) => {
   const { email, password } = registerData;
 
   await checkExistsUserService({ email: email });
@@ -23,20 +23,20 @@ export const signUpUserService = async registerData => {
   await User.create(registerData);
 };
 
-const checkExistsUserService = async filter => {
+const checkExistsUserService = async (filter) => {
   const isUserExists = await User.exists(filter);
   if (isUserExists) throw new HttpError(409, 'Provided email already exists');
 };
 
-const hashPassword = async data => {
+const hashPassword = async (data) => {
   const salt = await bcrypt.genSalt(+GEN_SALT_NUMBER);
   const hash = bcrypt.hash(data, salt);
   return hash;
 };
 
-const getGravatar = email => gravatar.url(email, { d: 'identicon' });
+const getGravatar = (email) => gravatar.url(email, { d: 'identicon' });
 
-export const signInService = async signData => {
+export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
@@ -73,7 +73,7 @@ export const editUserService = expressAsyncHandler(
     if (userEmail !== email) await checkExistsUserService({ email: email });
 
     if (file) {
-      const newAvatarURL = await updateAvatar(id, file);
+      const newAvatarURL = await cloudinaryService(id, file);
       newUserData.avatarURL = newAvatarURL;
     }
 
@@ -84,15 +84,7 @@ export const editUserService = expressAsyncHandler(
   },
 );
 
-const updateAvatar = expressAsyncHandler(async (id, file) => {
-  const avatarURL = file.path.replace('public', '');
-
-  const newAvatarURL = await jimpService(id, avatarURL);
-
-  return newAvatarURL;
-});
-
-export const refreshService = async refreshData => {
+export const refreshService = async (refreshData) => {
   const { refreshToken: token } = refreshData;
 
   const user = await User.findOne({ refreshToken: token });
@@ -113,6 +105,6 @@ export const refreshService = async refreshData => {
   return { accessToken, refreshToken };
 };
 
-export const signoutService = async id => {
+export const signoutService = async (id) => {
   await User.findByIdAndUpdate(id, { accessToken: '', refreshToken: '' });
 };
