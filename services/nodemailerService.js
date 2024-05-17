@@ -24,7 +24,7 @@ export const nodemailerService = async (verificationToken, email) => {
       from: MAIL_SERVICE_USER,
       to: email,
       subject: 'Email verification',
-      text: `Veirify your emai. ${BASE_URL}api/users/verify/${verificationToken}`, //! DEV ONLY
+      text: `Veirify your emai. ${BASE_URL}api/users/verify/${verificationToken}`,
       html: `<h1>Veirify your email</h1>
     <a href="${BASE_URL}api/users/verify/${verificationToken}">Verify your email</a>`,
     };
