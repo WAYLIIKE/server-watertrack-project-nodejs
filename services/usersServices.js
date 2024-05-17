@@ -9,9 +9,9 @@ import {
   refreshTokenValidation,
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
-import { jimpService } from './jimpService.js';
 import { v4 } from 'uuid';
 import { nodemailerService } from './nodemailerService.js';
+import { cloudinaryService } from './cloudinaryService.js';
 
 export const signUpUserService = async (registerData) => {
   const { email, password } = registerData;
@@ -30,7 +30,7 @@ export const signUpUserService = async (registerData) => {
 
 const checkExistsUserService = async (filter) => {
   const isUserExists = await User.exists(filter);
-  if (isUserExists) throw new HttpError(400, 'Email in use');
+  if (isUserExists) throw new HttpError(409, 'Provided email already exists');
 };
 
 const hashPassword = async (data) => {
@@ -77,9 +77,12 @@ export const signInService = async (signData) => {
   const accessToken = createAccessToken(user.id);
   const refreshToken = createRefreshToken(user.id);
 
-  await User.findByIdAndUpdate(user.id, { accessToken, refreshToken });
+  const finalUser = await User.findByIdAndUpdate(user.id, {
+    accessToken,
+    refreshToken,
+  }).select('-password -accessToken -refreshToken');
 
-  return { accessToken, refreshToken };
+  return { finalUser, accessToken, refreshToken };
 };
 
 export const findUserService = expressAsyncHandler(async (id, accessToken) => {
@@ -99,7 +102,7 @@ export const editUserService = expressAsyncHandler(
     if (userEmail !== email) await checkExistsUserService({ email: email });
 
     if (file) {
-      const newAvatarURL = await updateAvatar(id, file);
+      const newAvatarURL = await cloudinaryService(id, file);
       newUserData.avatarURL = newAvatarURL;
     }
 
@@ -109,14 +112,6 @@ export const editUserService = expressAsyncHandler(
     return newUser;
   },
 );
-
-const updateAvatar = expressAsyncHandler(async (id, file) => {
-  const avatarURL = file.path.replace('public', '');
-
-  const newAvatarURL = await jimpService(id, avatarURL);
-
-  return newAvatarURL;
-});
 
 export const refreshService = async (refreshData) => {
   const { refreshToken: token } = refreshData;

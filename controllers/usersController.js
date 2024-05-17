@@ -33,8 +33,12 @@ export const resendEmail = expressAsyncHandler(async (req, res) => {
 });
 
 export const signIn = expressAsyncHandler(async (req, res) => {
-  const { accessToken, refreshToken } = await signInService(req.body);
+  const { finalUser, accessToken, refreshToken } = await signInService(
+    req.body,
+  );
+
   res.status(200).json({
+    user: finalUser,
     accessToken,
     refreshToken,
   });
@@ -71,5 +75,5 @@ export const signOut = expressAsyncHandler(async (req, res) => {
 
   await signoutService(_id);
 
-  res.status(200).json({ message: 'Successful signout.' });
+  res.status(200).json({ message: 'Successful signout' });
 });

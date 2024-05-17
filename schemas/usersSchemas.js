@@ -41,6 +41,7 @@ export const editUserJoiSchema = Joi.object({
   }),
   name: Joi.string()
     .min(2)
+    .max(40)
     .regex(/^[A-Za-z\s]+$/),
   gender: Joi.string().valid('Man', 'Woman'),
   weight: Joi.number().min(20).max(600).integer().messages({
@@ -48,16 +49,16 @@ export const editUserJoiSchema = Joi.object({
     'number.max': 'You cannot weigh more than 600 kilograms',
     'number.integer': 'Weigth value must be integer',
   }),
-  activityTime: Joi.number().integer().positive().messages({
+  activityTime: Joi.number().integer().positive().max(720).messages({
     'number.integer': 'Activity time value must be integer',
     'number.positive': 'Activity time value must be positive',
   }),
-  desiredVolume: Joi.number().min(100).max(5000).integer().messages({
+  desiredVolume: Joi.number().min(100).max(31200).integer().messages({
     'number.min': 'Please enter below 100 and 5000 ml',
     'number.max': 'Please enter below 100 and 5000 ml',
     'number.integer': 'Vater volume value must be integer',
   }),
-});
+}).or('email', 'name', 'gender', 'weight', 'activityTime', 'desiredVolume');
 
 export const refreshJoiSchema = Joi.object({
   refreshToken: Joi.string().required(),
