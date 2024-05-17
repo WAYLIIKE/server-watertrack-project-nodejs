@@ -3,6 +3,7 @@ const {
   MAIL_SERVICE_PORT,
   MAIL_SERVICE_USER,
   MAIL_SERVICE_PASS,
+  BASE_URL,
 } = process.env;
 import nodemailer from 'nodemailer';
 import { HttpError } from '../helpers/HttpError.js';
@@ -23,9 +24,9 @@ export const nodemailerService = async (verificationToken, email) => {
       from: MAIL_SERVICE_USER,
       to: email,
       subject: 'Email verification',
-      text: `Veirify your emai. https://server-watertrack-project-nodejs.onrender.com/api/users/verify/${verificationToken}`, //! DEV ONLY
+      text: `Veirify your emai. ${BASE_URL}api/users/verify/${verificationToken}`, //! DEV ONLY
       html: `<h1>Veirify your email</h1>
-    <a href="https://server-watertrack-project-nodejs.onrender.com/api/users/verify/${verificationToken}">Verify your email</a>`,
+    <a href="${BASE_URL}api/users/verify/${verificationToken}">Verify your email</a>`,
     };
 
     await emailTransporter.sendMail(emailConfig);
