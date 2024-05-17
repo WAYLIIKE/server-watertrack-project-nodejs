@@ -9,6 +9,8 @@ import {
   refreshTokenValidation,
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
+import { v4 } from 'uuid';
+import { nodemailerService } from './nodemailerService.js';
 import { cloudinaryService } from './cloudinaryService.js';
 
 export const signUpUserService = async (registerData) => {
@@ -19,6 +21,9 @@ export const signUpUserService = async (registerData) => {
   registerData.name = email.split('@')[0];
   registerData.password = await hashPassword(password);
   registerData.avatarURL = getGravatar(email);
+  registerData.verificationToken = v4();
+
+  await nodemailerService(registerData.verificationToken, email);
 
   await User.create(registerData);
 };
@@ -34,13 +39,37 @@ const hashPassword = async (data) => {
   return hash;
 };
 
-const getGravatar = (email) => gravatar.url(email, { d: 'identicon' });
+const getGravatar = (email) =>
+  gravatar.url(email, { d: 'identicon', s: '100' });
+
+export const verifyService = async (verificationToken) => {
+  const user = await User.findOneAndUpdate(
+    { verificationToken: verificationToken },
+    { verification: true, verificationToken: null },
+  );
+
+  if (!user) throw new HttpError(400, 'User not found');
+};
+
+export const resendEmailService = async (email) => {
+  const { verification, verificationToken } = await User.findOne({
+    email: email,
+  });
+
+  if (verification === true)
+    throw new HttpError(400, 'Your email already verificated');
+
+  await nodemailerService(verificationToken, email);
+};
 
 export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
   if (!user) throw new HttpError(401, 'Email or password is wrong');
+
+  if (user.verification !== true)
+    throw new HttpError(401, 'Please, verify your email');
 
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) throw new HttpError(401, 'Email or password is wrong');

@@ -2,17 +2,34 @@ import expressAsyncHandler from 'express-async-handler';
 import {
   editUserService,
   refreshService,
+  resendEmailService,
   signInService,
   signUpUserService,
   signoutService,
+  verifyService,
 } from '../services/usersServices.js';
 
 export const signUp = expressAsyncHandler(async (req, res) => {
   await signUpUserService(req.body);
 
   res.status(201).json({
-    message: 'Successfully created',
+    message: 'Verification link has been sent to your email',
   });
+});
+
+export const verification = expressAsyncHandler(async (req, res) => {
+  const { verificationToken } = req.params;
+  await verifyService(verificationToken);
+  res.status(200).json({ message: 'Verification sucsessfull' });
+});
+
+export const resendEmail = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  await resendEmailService(email);
+
+  res
+    .status(200)
+    .json({ message: 'Verification link has been resent to your email' });
 });
 
 export const signIn = expressAsyncHandler(async (req, res) => {

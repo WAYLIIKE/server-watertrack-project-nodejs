@@ -5,6 +5,7 @@ import {
   signUpJoiSchema,
   editUserJoiSchema,
   signInJoiSchema,
+  checkEmailJoiSchema,
 } from '../schemas/usersSchemas.js';
 import {
   currentUser,
@@ -13,12 +14,22 @@ import {
   refresh,
   editUser,
   signOut,
+  verification,
+  resendEmail,
 } from '../controllers/usersController.js';
 import { protection, uploadAvatar } from '../middlewares/usersMiddlewares.js';
 
 const usersRouter = express.Router();
 
 usersRouter.post('/signup', joiValidateDataMiddleware(signUpJoiSchema), signUp);
+
+usersRouter.get('/verify/:verificationToken', verification);
+
+usersRouter.post(
+  '/verify',
+  joiValidateDataMiddleware(checkEmailJoiSchema),
+  resendEmail,
+);
 
 usersRouter.post('/signin', joiValidateDataMiddleware(signInJoiSchema), signIn);
 
