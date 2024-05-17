@@ -49,7 +49,7 @@ export const editUserJoiSchema = Joi.object({
     'number.max': 'You cannot weigh more than 600 kilograms',
     'number.integer': 'Weigth value must be integer',
   }),
-  activityTime: Joi.number().integer().positive().max(720).messages({
+  activityTime: Joi.number().integer().min(0).max(12).messages({
     'number.integer': 'Activity time value must be integer',
     'number.positive': 'Activity time value must be positive',
   }),
