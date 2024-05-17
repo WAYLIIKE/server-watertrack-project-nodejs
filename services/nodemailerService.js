@@ -23,9 +23,9 @@ export const nodemailerService = async (verificationToken, email) => {
       from: MAIL_SERVICE_USER,
       to: email,
       subject: 'Email verification',
-      text: `Veirify your emai. http://localhost:3000/api/users/verify/${verificationToken}`, //! DEV ONLY
+      text: `Veirify your emai. https://server-watertrack-project-nodejs.onrender.com/api/users/verify/${verificationToken}`, //! DEV ONLY
       html: `<h1>Veirify your email</h1>
-    <a href="http://localhost:3000/api/users/verify/${verificationToken}">Verify your email</a>`,
+    <a href="https://server-watertrack-project-nodejs.onrender.com/api/users/verify/${verificationToken}">Verify your email</a>`,
     };
 
     await emailTransporter.sendMail(emailConfig);
