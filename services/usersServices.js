@@ -46,6 +46,7 @@ export const verifyService = async (verificationToken) => {
   const user = await User.findOneAndUpdate(
     { verificationToken: verificationToken },
     { verification: true, verificationToken: null },
+    { new: true },
   );
 
   if (!user) throw new HttpError(400, 'User not found');
