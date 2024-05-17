@@ -50,8 +50,6 @@ export const verifyService = async (verificationToken) => {
   );
 
   if (!user) throw new HttpError(400, 'User not found');
-
-  console.log(user);
 };
 
 export const resendEmailService = async (email) => {
