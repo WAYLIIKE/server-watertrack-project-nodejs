@@ -7,7 +7,12 @@ const waterSchema = new Schema(
     date: {
       type: Number,
       min: +startDate,
-      max: Date.now(),
+      validate: {
+        validator: function (value) {
+          return value <= Date.now();
+        },
+        message: 'Date must be less than or equal to the current date.',
+      },
       required: true,
     },
     amount: {
