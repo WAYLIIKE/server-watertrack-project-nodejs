@@ -1,5 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 import {
+  editPasswordService,
   editUserService,
   refreshService,
   resendEmailService,
@@ -59,6 +60,14 @@ export const editUser = expressAsyncHandler(async (req, res) => {
   res.status(200).json({
     user: newUser,
   });
+});
+
+export const editPassword = expressAsyncHandler(async (req, res) => {
+  const { accessToken } = req.params;
+  const { oldPass, newPass } = req.body;
+
+  await editPasswordService(accessToken, oldPass, newPass);
+  res.status(200).json({ message: 'Sucsess' });
 });
 
 export const refresh = expressAsyncHandler(async (req, res) => {
