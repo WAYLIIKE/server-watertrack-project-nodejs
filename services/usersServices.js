@@ -69,7 +69,7 @@ export const signInService = async signData => {
   if (!user) throw new HttpError(401, 'Email or password is wrong');
 
   if (user.verification !== true)
-    throw new HttpError(403, 'Please, verify your email');
+    throw new HttpError(401, 'Please, verify your email');
 
   await checkPasswordService(password, user.password);
 
