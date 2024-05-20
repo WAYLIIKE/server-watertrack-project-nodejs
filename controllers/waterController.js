@@ -85,7 +85,7 @@ export const getDayWater = asyncHandler(async (req, res) => {
 
 export const getMonthWater = asyncHandler(async (req, res) => {
   const { _id: owner } = req.user;
-  const date = new Date(+req.params.date); // Припустимо, що date у форматі Unix timestamp
+  const date = new Date(+req.params.date);
 
   const userTimezoneOffset = req.user.timezoneOffset || 0;
 
