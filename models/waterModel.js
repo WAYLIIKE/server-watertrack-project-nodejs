@@ -2,6 +2,8 @@ import { Schema, model, Types } from 'mongoose';
 
 const startDate = new Date('01/01/2024');
 
+const unixDay = 86400000;
+
 const waterSchema = new Schema(
   {
     date: {
@@ -9,7 +11,7 @@ const waterSchema = new Schema(
       min: +startDate,
       validate: {
         validator: function (value) {
-          return value <= Date.now();
+          return value <= Date.now() + unixDay;
         },
         message: 'Date must be less than or equal to the current date.',
       },
