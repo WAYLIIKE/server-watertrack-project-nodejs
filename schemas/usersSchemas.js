@@ -54,8 +54,8 @@ export const editUserJoiSchema = Joi.object({
     'number.positive': 'Activity time value must be positive',
   }),
   desiredVolume: Joi.number().min(100).max(31200).integer().messages({
-    'number.min': 'Please enter below 100 and 5000 ml',
-    'number.max': 'Please enter below 100 and 5000 ml',
+    'number.min': 'Please enter below 100 and 31200 ml',
+    'number.max': 'Please enter below 100 and 31200 ml',
     'number.integer': 'Vater volume value must be integer',
   }),
 }).or('email', 'name', 'gender', 'weight', 'activityTime', 'desiredVolume');
