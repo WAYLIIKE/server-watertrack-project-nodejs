@@ -3,10 +3,12 @@ import { Water } from '../models/waterModel.js';
 import {
   addWaterService,
   deleteWaterService,
+  getSummaryTodayWater,
   updateWaterService,
 } from '../services/waterServices.js';
 import { HttpError } from '../helpers/HttpError.js';
 import { endOfMonth, startOfMonth } from 'date-fns';
+import expressAsyncHandler from 'express-async-handler';
 
 export const createWater = asyncHandler(async (req, res, next) => {
   // const water = await Water.create(req.body);
@@ -125,4 +127,9 @@ export const getMonthWater = asyncHandler(async (req, res) => {
   const result = Object.values(aggregatedData);
 
   res.status(200).json(result);
+});
+
+export const summaryTodayWater = expressAsyncHandler(async (req, res) => {
+  const todaySumamryWater = await getSummaryTodayWater();
+  res.status(200).json({ todaySumamryWater });
 });
