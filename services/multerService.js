@@ -10,5 +10,3 @@ export const multerFilter = (req, file, cbk) => {
     cbk(new HttpError(400, 'Please upload images only'), false);
   }
 };
-
-export const upload = multer();
