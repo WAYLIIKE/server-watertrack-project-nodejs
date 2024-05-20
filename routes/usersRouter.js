@@ -6,6 +6,7 @@ import {
   editUserJoiSchema,
   signInJoiSchema,
   checkEmailJoiSchema,
+  editPasswordJoiSchema,
 } from '../schemas/usersSchemas.js';
 import {
   currentUser,
@@ -16,6 +17,7 @@ import {
   signOut,
   verification,
   resendEmail,
+  editPassword,
 } from '../controllers/usersController.js';
 import { protection, uploadAvatar } from '../middlewares/usersMiddlewares.js';
 
@@ -47,6 +49,13 @@ usersRouter.patch(
   uploadAvatar,
   joiValidateDataMiddleware(editUserJoiSchema),
   editUser,
+);
+
+usersRouter.patch(
+  '/current/edit/password/:accessToken',
+  protection,
+  joiValidateDataMiddleware(editPasswordJoiSchema),
+  editPassword,
 );
 
 usersRouter.post('/signout', protection, signOut);

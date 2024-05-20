@@ -72,8 +72,7 @@ export const signInService = async (signData) => {
   if (user.verification !== true)
     throw new HttpError(401, 'Please, verify your email');
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
-  if (!isValidPassword) throw new HttpError(401, 'Email or password is wrong');
+  await checkPasswordService(password, user.password);
 
   const accessToken = createAccessToken(user.id);
   const refreshToken = createRefreshToken(user.id);
@@ -87,6 +86,13 @@ export const signInService = async (signData) => {
 
   return { finalUser, accessToken, refreshToken };
 };
+
+const checkPasswordService = expressAsyncHandler(
+  async (checkedPassword, userPassword) => {
+    const isValidPassword = await bcrypt.compare(checkedPassword, userPassword);
+    if (!isValidPassword) throw new HttpError(400, 'Password is wrong!');
+  },
+);
 
 export const findUserService = expressAsyncHandler(async (id, accessToken) => {
   const user = await User.findById(id).select('-password');
@@ -115,6 +121,18 @@ export const editUserService = expressAsyncHandler(
       '-password -refreshToken -accessToken -verification -verificationToken',
     );
     return newUser;
+  },
+);
+
+export const editPasswordService = expressAsyncHandler(
+  async (accessToken, oldPass, newPass) => {
+    const user = await User.findOne({ accessToken: accessToken });
+    if (!user) throw new HttpError(401, 'Not authorized!');
+
+    await checkPasswordService(oldPass, user.password);
+
+    user.password = await hashPassword(newPass);
+    await user.save();
   },
 );
 
