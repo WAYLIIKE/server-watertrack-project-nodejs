@@ -13,7 +13,7 @@ import { v4 } from 'uuid';
 import { nodemailerService } from './nodemailerService.js';
 import { cloudinaryService } from './cloudinaryService.js';
 
-export const signUpUserService = async (registerData) => {
+export const signUpUserService = async registerData => {
   const { email, password } = registerData;
 
   await checkExistsUserService({ email: email });
@@ -28,21 +28,20 @@ export const signUpUserService = async (registerData) => {
   await User.create(registerData);
 };
 
-const checkExistsUserService = async (filter) => {
+const checkExistsUserService = async filter => {
   const isUserExists = await User.exists(filter);
   if (isUserExists) throw new HttpError(409, 'Provided email already exists');
 };
 
-const hashPassword = async (data) => {
+const hashPassword = async data => {
   const salt = await bcrypt.genSalt(+GEN_SALT_NUMBER);
   const hash = bcrypt.hash(data, salt);
   return hash;
 };
 
-const getGravatar = (email) =>
-  gravatar.url(email, { d: 'identicon', s: '100' });
+const getGravatar = email => gravatar.url(email, { d: 'identicon', s: '100' });
 
-export const verifyService = async (verificationToken) => {
+export const verifyService = async verificationToken => {
   const user = await User.findOneAndUpdate(
     { verificationToken: verificationToken },
     { verification: true, verificationToken: null },
@@ -52,7 +51,7 @@ export const verifyService = async (verificationToken) => {
   if (!user) throw new HttpError(400, 'User not found');
 };
 
-export const resendEmailService = async (email) => {
+export const resendEmailService = async email => {
   const { verification, verificationToken } = await User.findOne({
     email: email,
   });
@@ -63,14 +62,14 @@ export const resendEmailService = async (email) => {
   await nodemailerService(verificationToken, email);
 };
 
-export const signInService = async (signData) => {
+export const signInService = async signData => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
   if (!user) throw new HttpError(401, 'Email or password is wrong');
 
   if (user.verification !== true)
-    throw new HttpError(401, 'Please, verify your email');
+    throw new HttpError(403, 'Please, verify your email');
 
   await checkPasswordService(password, user.password);
 
@@ -136,7 +135,7 @@ export const editPasswordService = expressAsyncHandler(
   },
 );
 
-export const refreshService = async (refreshData) => {
+export const refreshService = async refreshData => {
   const { refreshToken: token } = refreshData;
 
   const user = await User.findOne({ refreshToken: token });
@@ -157,6 +156,6 @@ export const refreshService = async (refreshData) => {
   return { accessToken, refreshToken };
 };
 
-export const signoutService = async (id) => {
+export const signoutService = async id => {
   await User.findByIdAndUpdate(id, { accessToken: '', refreshToken: '' });
 };
