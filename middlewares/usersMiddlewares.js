@@ -1,7 +1,10 @@
 import expressAsyncHandler from 'express-async-handler';
 import { HttpError } from '../helpers/HttpError.js';
 import { tokenValidation } from '../services/jwtService.js';
-import { findUserService } from '../services/usersServices.js';
+import {
+  findUserService,
+  isHaveUserPasswordResetTokenService,
+} from '../services/usersServices.js';
 import multer from 'multer';
 import { multerFilter, multerStorage } from '../services/multerService.js';
 
@@ -19,6 +22,20 @@ export const protection = expressAsyncHandler(async (req, res, next) => {
   req.user = user;
   next();
 });
+
+export const resetPasswordProtection = expressAsyncHandler(
+  async (req, res, next) => {
+    const { resetPasswordToken } = req.params;
+
+    const isHaveUserPasswordResetToken =
+      await isHaveUserPasswordResetTokenService(resetPasswordToken);
+
+    if (!isHaveUserPasswordResetToken)
+      throw new HttpError(404, 'Route nod found');
+
+    next();
+  },
+);
 
 export const uploadAvatar = multer({
   storage: multerStorage,

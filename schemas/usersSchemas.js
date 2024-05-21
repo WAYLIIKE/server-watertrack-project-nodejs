@@ -71,6 +71,16 @@ export const editPasswordJoiSchema = Joi.object({
     .required(),
 });
 
+export const resetPasswordJoiSchema = Joi.object({
+  newPass: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[A-Z])(?=.*\d).*$/)
+    .message(
+      'Password must be at least 8 characters long, contain at least one uppercase letter, and at least one digit',
+    )
+    .required(),
+});
+
 export const refreshJoiSchema = Joi.object({
   refreshToken: Joi.string().required(),
 });

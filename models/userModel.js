@@ -53,6 +53,9 @@ const userShema = new Schema(
     verificationToken: {
       type: String,
     },
+    resetPasswordToken: {
+      type: String,
+    },
   },
   { versionKey: false, timestamps: true },
 );

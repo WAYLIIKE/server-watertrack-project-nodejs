@@ -8,7 +8,18 @@ const {
 import nodemailer from 'nodemailer';
 import { HttpError } from '../helpers/HttpError.js';
 
-export const nodemailerService = async (verificationToken, email) => {
+export const nodemailerService = async (
+  email,
+  identifier,
+  emailConfigSchema,
+) => {
+  const configData = {
+    MAIL_SERVICE_USER,
+    email,
+    BASE_URL,
+    identifier,
+  };
+
   try {
     const emailTransporter = nodemailer.createTransport({
       host: MAIL_SERVICE_HOST,
@@ -20,14 +31,7 @@ export const nodemailerService = async (verificationToken, email) => {
       },
     });
 
-    const emailConfig = {
-      from: MAIL_SERVICE_USER,
-      to: email,
-      subject: 'Email verification',
-      text: `Veirify your emai. ${BASE_URL}api/users/verify/${verificationToken}`,
-      html: `<h1>Veirify your email</h1>
-    <a href="${BASE_URL}api/users/verify/${verificationToken}">Verify your email</a>`,
-    };
+    const emailConfig = emailConfigSchema(configData);
 
     await emailTransporter.sendMail(emailConfig);
   } catch (error) {
