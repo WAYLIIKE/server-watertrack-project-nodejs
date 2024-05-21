@@ -212,3 +212,7 @@ export const refreshService = async (refreshData) => {
 export const signoutService = async (id) => {
   await User.findByIdAndUpdate(id, { accessToken: '', refreshToken: '' });
 };
+
+export const countServices = async () => {
+  return await User.countDocuments();
+};

@@ -15,6 +15,7 @@ import {
   refresh,
   editUser,
   signOut,
+  countUser,
   verification,
   resendEmail,
   editPassword,
@@ -84,5 +85,7 @@ usersRouter.patch(
 );
 
 usersRouter.post('/signout', protection, signOut);
+
+usersRouter.get('/count', countUser);
 
 export { usersRouter };

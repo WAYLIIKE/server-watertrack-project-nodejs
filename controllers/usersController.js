@@ -1,5 +1,6 @@
 import expressAsyncHandler from 'express-async-handler';
 import {
+  countServices,
   editPasswordService,
   editUserService,
   forgotPasswordService,
@@ -108,3 +109,11 @@ export const resetPassword = expressAsyncHandler(async (req, res) => {
 
   res.status(200).json({ message: 'Your password has been reset' });
 });
+
+export const countUser = expressAsyncHandler(async (req, res) => {
+  const count = await countServices();
+  res.status(200).json({
+    count,
+  });
+});
+
