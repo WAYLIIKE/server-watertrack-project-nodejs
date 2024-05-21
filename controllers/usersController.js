@@ -63,10 +63,10 @@ export const editUser = expressAsyncHandler(async (req, res) => {
 });
 
 export const editPassword = expressAsyncHandler(async (req, res) => {
-  const { accessToken } = req.params;
+  const { id } = req.params;
   const { oldPass, newPass } = req.body;
 
-  await editPasswordService(accessToken, oldPass, newPass);
+  await editPasswordService(id, oldPass, newPass);
   res.status(200).json({ message: 'Sucsess' });
 });
 
