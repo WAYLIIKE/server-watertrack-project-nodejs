@@ -52,7 +52,7 @@ usersRouter.patch(
 );
 
 usersRouter.patch(
-  '/current/edit/password/:accessToken',
+  '/current/edit/password/:id',
   protection,
   joiValidateDataMiddleware(editPasswordJoiSchema),
   editPassword,

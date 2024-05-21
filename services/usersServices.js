@@ -124,8 +124,8 @@ export const editUserService = expressAsyncHandler(
 );
 
 export const editPasswordService = expressAsyncHandler(
-  async (accessToken, oldPass, newPass) => {
-    const user = await User.findOne({ accessToken: accessToken });
+  async (id, oldPass, newPass) => {
+    const user = await User.findOne({ _id: id });
     if (!user) throw new HttpError(401, 'Not authorized!');
 
     await checkPasswordService(oldPass, user.password);
