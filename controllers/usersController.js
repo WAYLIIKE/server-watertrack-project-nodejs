@@ -2,8 +2,10 @@ import expressAsyncHandler from 'express-async-handler';
 import {
   editPasswordService,
   editUserService,
+  forgotPasswordService,
   refreshService,
   resendEmailService,
+  resetPasswordService,
   signInService,
   signUpUserService,
   signoutService,
@@ -85,4 +87,24 @@ export const signOut = expressAsyncHandler(async (req, res) => {
   await signoutService(_id);
 
   res.status(200).json({ message: 'Successful signout' });
+});
+
+export const forgotPassword = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  await forgotPasswordService(email);
+  res.status(200).json({
+    message:
+      'A message with a link to reset your password has been sent to your email',
+  });
+});
+
+export const resetPasswordPage = (req, res) =>
+  res.status(200).json({ message: 'You can reset your password' });
+
+export const resetPassword = expressAsyncHandler(async (req, res) => {
+  const { newPass } = req.body;
+  const { resetPasswordToken } = req.params;
+  await resetPasswordService(resetPasswordToken, newPass);
+
+  res.status(200).json({ message: 'Your password has been reset' });
 });

@@ -12,8 +12,12 @@ import expressAsyncHandler from 'express-async-handler';
 import { v4 } from 'uuid';
 import { nodemailerService } from './nodemailerService.js';
 import { cloudinaryService } from './cloudinaryService.js';
+import {
+  forgotPasswordEmailConfigSchema,
+  verificationEmailConfigSchema,
+} from '../schemas/emailConfigSchemas.js';
 
-export const signUpUserService = async registerData => {
+export const signUpUserService = async (registerData) => {
   const { email, password } = registerData;
 
   await checkExistsUserService({ email: email });
@@ -23,25 +27,30 @@ export const signUpUserService = async registerData => {
   registerData.avatarURL = getGravatar(email);
   registerData.verificationToken = v4();
 
-  await nodemailerService(registerData.verificationToken, email);
+  await nodemailerService(
+    email,
+    registerData.verificationToken,
+    verificationEmailConfigSchema,
+  );
 
   await User.create(registerData);
 };
 
-const checkExistsUserService = async filter => {
+const checkExistsUserService = async (filter) => {
   const isUserExists = await User.exists(filter);
   if (isUserExists) throw new HttpError(409, 'Provided email already exists');
 };
 
-const hashPassword = async data => {
+const hashPassword = async (data) => {
   const salt = await bcrypt.genSalt(+GEN_SALT_NUMBER);
   const hash = bcrypt.hash(data, salt);
   return hash;
 };
 
-const getGravatar = email => gravatar.url(email, { d: 'identicon', s: '100' });
+const getGravatar = (email) =>
+  gravatar.url(email, { d: 'identicon', s: '100' });
 
-export const verifyService = async verificationToken => {
+export const verifyService = async (verificationToken) => {
   const user = await User.findOneAndUpdate(
     { verificationToken: verificationToken },
     { verification: true, verificationToken: null },
@@ -51,7 +60,7 @@ export const verifyService = async verificationToken => {
   if (!user) throw new HttpError(400, 'User not found');
 };
 
-export const resendEmailService = async email => {
+export const resendEmailService = async (email) => {
   const { verification, verificationToken } = await User.findOne({
     email: email,
   });
@@ -59,10 +68,14 @@ export const resendEmailService = async email => {
   if (verification === true)
     throw new HttpError(400, 'Your email already verificated');
 
-  await nodemailerService(verificationToken, email);
+  await nodemailerService(
+    email,
+    verificationToken,
+    verificationEmailConfigSchema,
+  );
 };
 
-export const signInService = async signData => {
+export const signInService = async (signData) => {
   const { email, password } = signData;
 
   const user = await User.findOne({ email: email });
@@ -103,6 +116,46 @@ export const findUserService = expressAsyncHandler(async (id, accessToken) => {
   return user;
 });
 
+export const forgotPasswordService = expressAsyncHandler(async (email) => {
+  const resetPasswordToken = v4();
+  const user = await User.findOneAndUpdate(
+    { email: email },
+    { resetPasswordToken: resetPasswordToken },
+  );
+
+  if (!user) throw new HttpError(404, `User with email ${email} not found`);
+
+  await nodemailerService(
+    email,
+    resetPasswordToken,
+    forgotPasswordEmailConfigSchema,
+  );
+});
+
+export const isHaveUserPasswordResetTokenService = async (
+  resetPasswordToken,
+) => {
+  const isHaveUserPasswordResetToken = await User.exists({
+    resetPasswordToken: resetPasswordToken,
+  });
+
+  return isHaveUserPasswordResetToken;
+};
+
+export const resetPasswordService = expressAsyncHandler(
+  async (resetPasswordToken, password) => {
+    const newPassword = await hashPassword(password);
+
+    await User.findOneAndUpdate(
+      { resetPasswordToken: resetPasswordToken },
+      {
+        password: newPassword,
+        $unset: { resetPasswordToken: '' },
+      },
+    );
+  },
+);
+
 export const editUserService = expressAsyncHandler(
   async (id, userEmail, newUserData, file) => {
     const { email } = newUserData;
@@ -135,7 +188,7 @@ export const editPasswordService = expressAsyncHandler(
   },
 );
 
-export const refreshService = async refreshData => {
+export const refreshService = async (refreshData) => {
   const { refreshToken: token } = refreshData;
 
   const user = await User.findOne({ refreshToken: token });
@@ -156,6 +209,6 @@ export const refreshService = async refreshData => {
   return { accessToken, refreshToken };
 };
 
-export const signoutService = async id => {
+export const signoutService = async (id) => {
   await User.findByIdAndUpdate(id, { accessToken: '', refreshToken: '' });
 };
