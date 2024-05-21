@@ -13,9 +13,9 @@ export const checkWaterId = expressAsyncHandler((req, res, next) => {
 
 export const checkWaterDate = expressAsyncHandler((req, res, next) => {
   const { date } = req.params;
-  console.log(date);
 
   const startDate = 1704067200000;
+  const unixDay = 86400000;
 
   const currentDate = new Date();
   const unixCurrentDate = currentDate.getTime();
@@ -25,7 +25,8 @@ export const checkWaterDate = expressAsyncHandler((req, res, next) => {
   if (date < startDate)
     throw new HttpError(400, 'Date must start from 2024/01/01');
 
-  if (date > unixCurrentDate) throw new HttpError(400, 'Date from future');
+  if (date > unixCurrentDate + unixDay)
+    throw new HttpError(400, 'Date from future');
 
   next();
 });

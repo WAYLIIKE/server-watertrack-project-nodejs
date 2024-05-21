@@ -9,7 +9,9 @@ import {
   refreshTokenValidation,
 } from './jwtService.js';
 import expressAsyncHandler from 'express-async-handler';
-import { jimpService } from './jimpService.js';
+import { v4 } from 'uuid';
+import { nodemailerService } from './nodemailerService.js';
+import { cloudinaryService } from './cloudinaryService.js';
 
 export const signUpUserService = async registerData => {
   const { email, password } = registerData;
@@ -19,6 +21,9 @@ export const signUpUserService = async registerData => {
   registerData.name = email.split('@')[0];
   registerData.password = await hashPassword(password);
   registerData.avatarURL = getGravatar(email);
+  registerData.verificationToken = v4();
+
+  await nodemailerService(registerData.verificationToken, email);
 
   await User.create(registerData);
 };
@@ -34,7 +39,28 @@ const hashPassword = async data => {
   return hash;
 };
 
-const getGravatar = email => gravatar.url(email, { d: 'identicon' });
+const getGravatar = email => gravatar.url(email, { d: 'identicon', s: '100' });
+
+export const verifyService = async verificationToken => {
+  const user = await User.findOneAndUpdate(
+    { verificationToken: verificationToken },
+    { verification: true, verificationToken: null },
+    { new: true },
+  );
+
+  if (!user) throw new HttpError(400, 'User not found');
+};
+
+export const resendEmailService = async email => {
+  const { verification, verificationToken } = await User.findOne({
+    email: email,
+  });
+
+  if (verification === true)
+    throw new HttpError(400, 'Your email already verificated');
+
+  await nodemailerService(verificationToken, email);
+};
 
 export const signInService = async signData => {
   const { email, password } = signData;
@@ -42,16 +68,30 @@ export const signInService = async signData => {
   const user = await User.findOne({ email: email });
   if (!user) throw new HttpError(401, 'Email or password is wrong');
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
-  if (!isValidPassword) throw new HttpError(401, 'Email or password is wrong');
+  if (user.verification !== true)
+    throw new HttpError(401, 'Please, verify your email');
+
+  await checkPasswordService(password, user.password);
 
   const accessToken = createAccessToken(user.id);
   const refreshToken = createRefreshToken(user.id);
 
-  await User.findByIdAndUpdate(user.id, { accessToken, refreshToken });
+  const finalUser = await User.findByIdAndUpdate(user.id, {
+    accessToken,
+    refreshToken,
+  }).select(
+    '-password -accessToken -refreshToken -verification -verificationToken',
+  );
 
-  return { accessToken, refreshToken };
+  return { finalUser, accessToken, refreshToken };
 };
+
+const checkPasswordService = expressAsyncHandler(
+  async (checkedPassword, userPassword) => {
+    const isValidPassword = await bcrypt.compare(checkedPassword, userPassword);
+    if (!isValidPassword) throw new HttpError(400, 'Password is wrong!');
+  },
+);
 
 export const findUserService = expressAsyncHandler(async (id, accessToken) => {
   const user = await User.findById(id).select('-password');
@@ -70,24 +110,30 @@ export const editUserService = expressAsyncHandler(
     if (userEmail !== email) await checkExistsUserService({ email: email });
 
     if (file) {
-      const newAvatarURL = await updateAvatar(id, file);
+      const newAvatarURL = await cloudinaryService(id, file);
       newUserData.avatarURL = newAvatarURL;
     }
 
     const newUser = await User.findByIdAndUpdate(id, newUserData, {
       new: true,
-    }).select('-password -refreshToken -accessToken');
+    }).select(
+      '-password -refreshToken -accessToken -verification -verificationToken',
+    );
     return newUser;
   },
 );
 
-const updateAvatar = expressAsyncHandler(async (id, file) => {
-  const avatarURL = file.path.replace('public', '');
+export const editPasswordService = expressAsyncHandler(
+  async (id, oldPass, newPass) => {
+    const user = await User.findOne({ _id: id });
+    if (!user) throw new HttpError(401, 'Not authorized!');
 
-  const newAvatarURL = await jimpService(id, avatarURL);
+    await checkPasswordService(oldPass, user.password);
 
-  return newAvatarURL;
-});
+    user.password = await hashPassword(newPass);
+    await user.save();
+  },
+);
 
 export const refreshService = async refreshData => {
   const { refreshToken: token } = refreshData;

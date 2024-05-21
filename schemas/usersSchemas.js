@@ -16,6 +16,15 @@ export const signUpJoiSchema = Joi.object({
     .required(),
 });
 
+export const checkEmailJoiSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { deny: ['ru', 'su'] },
+    })
+    .required(),
+});
+
 export const signInJoiSchema = Joi.object({
   email: Joi.string()
     .email({
@@ -40,25 +49,27 @@ export const editUserJoiSchema = Joi.object({
     'number.max': 'You cannot weigh more than 600 kilograms',
     'number.integer': 'Weigth value must be integer',
   }),
-  activityTime: Joi.number().integer().positive().max(720).messages({
+  activityTime: Joi.number().integer().min(0).max(12).messages({
     'number.integer': 'Activity time value must be integer',
     'number.positive': 'Activity time value must be positive',
   }),
-  desiredVolume: Joi.number().min(100).max(5000).integer().messages({
-    'number.min': 'Please enter below 100 and 5000 ml',
-    'number.max': 'Please enter below 100 and 5000 ml',
+  desiredVolume: Joi.number().min(100).max(31200).integer().messages({
+    'number.min': 'Please enter below 100 and 31200 ml',
+    'number.max': 'Please enter below 100 and 31200 ml',
     'number.integer': 'Vater volume value must be integer',
   }),
-  avatar: Joi.string(),
-}).or(
-  'email',
-  'name',
-  'gender',
-  'weight',
-  'activityTime',
-  'desiredVolume',
-  'avatar',
-);
+}).or('email', 'name', 'gender', 'weight', 'activityTime', 'desiredVolume');
+
+export const editPasswordJoiSchema = Joi.object({
+  oldPass: Joi.string().required(),
+  newPass: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[A-Z])(?=.*\d).*$/)
+    .message(
+      'Password must be at least 8 characters long, contain at least one uppercase letter, and at least one digit',
+    )
+    .required(),
+});
 
 export const refreshJoiSchema = Joi.object({
   refreshToken: Joi.string().required(),

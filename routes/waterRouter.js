@@ -3,6 +3,8 @@ import {
   createWater,
   deleteWater,
   getDayWater,
+  getMonthWater,
+  summaryTodayWater,
   updateWater,
 } from '../controllers/waterController.js';
 import { joiValidateDataMiddleware } from '../middlewares/joiValidatorMiddleware.js';
@@ -36,5 +38,9 @@ waterRouter.put(
 waterRouter.delete('/remove/:id', protection, checkWaterId, deleteWater);
 
 waterRouter.get('/day/:date', protection, checkWaterDate, getDayWater);
+
+waterRouter.get('/month/:date', protection, checkWaterDate, getMonthWater);
+
+waterRouter.get('/today', summaryTodayWater);
 
 export { waterRouter };

@@ -35,7 +35,7 @@ const userShema = new Schema(
     desiredVolume: {
       type: Number,
       min: 100,
-      max: 5000,
+      max: 31200,
       default: 1500,
     },
     accessToken: {
@@ -45,6 +45,13 @@ const userShema = new Schema(
     refreshToken: {
       type: String,
       default: '',
+    },
+    verification: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
     },
   },
   { versionKey: false, timestamps: true },
