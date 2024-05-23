@@ -61,9 +61,13 @@ export const verifyService = async (verificationToken) => {
 };
 
 export const resendEmailService = async (email) => {
-  const { verification, verificationToken } = await User.findOne({
+  const user = await User.findOne({
     email: email,
   });
+
+  if (!user) throw new HttpError(400, 'Email is wrong');
+
+  const { verification, verificationToken } = user;
 
   if (verification === true)
     throw new HttpError(400, 'Your email already verificated');
@@ -123,7 +127,7 @@ export const forgotPasswordService = expressAsyncHandler(async (email) => {
     { resetPasswordToken: resetPasswordToken },
   );
 
-  if (!user) throw new HttpError(404, `User with email ${email} not found`);
+  if (!user) throw new HttpError(400, `Email is wrong`);
 
   await nodemailerService(
     email,
