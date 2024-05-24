@@ -8,7 +8,7 @@ export const verificationEmailConfigSchema = ({
     from: MAIL_SERVICE_USER,
     to: email,
     subject: 'Email verification',
-    text: `Veirify your emai. ${BASE_URL}api/users/verify/${identifier}`,
+    text: `Veirify your emai. ${BASE_URL}/verify/${identifier}`,
     html: `<table
       cellpadding="0"
       cellspacing="0"
