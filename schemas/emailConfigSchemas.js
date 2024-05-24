@@ -1,14 +1,13 @@
 export const verificationEmailConfigSchema = ({
   MAIL_SERVICE_USER,
   email,
-  BASE_URL,
   identifier,
 }) => {
   return {
     from: MAIL_SERVICE_USER,
     to: email,
     subject: 'Email verification',
-    text: `Veirify your emai. ${BASE_URL}/verify/${identifier}`,
+    text: `Veirify your emai. https://wayliike.github.io/watertrack-project-nodejs-react/verify/${identifier}`,
     html: `<table
       cellpadding="0"
       cellspacing="0"
@@ -45,7 +44,7 @@ export const verificationEmailConfigSchema = ({
             AquaTrack App!
           </p>
           <a
-            href="${BASE_URL}api/users/verify/${identifier}"
+            href="https://wayliike.github.io/watertrack-project-nodejs-react/verify/${identifier}"
             style="
               display: inline-block;
               background-color: #9be1a0;
