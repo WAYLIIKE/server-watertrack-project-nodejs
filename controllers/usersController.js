@@ -99,8 +99,7 @@ export const forgotPassword = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const resetPasswordPage = (req, res) =>
-  res.status(200).json({ message: 'You can reset your password' });
+export const resetPasswordPage = (req, res) => res.sendStatus(204);
 
 export const resetPassword = expressAsyncHandler(async (req, res) => {
   const { newPass } = req.body;
@@ -116,4 +115,3 @@ export const countUser = expressAsyncHandler(async (req, res) => {
     count,
   });
 });
-

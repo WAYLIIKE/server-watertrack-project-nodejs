@@ -7,6 +7,7 @@ import {
   signInJoiSchema,
   checkEmailJoiSchema,
   editPasswordJoiSchema,
+  resetPasswordJoiSchema,
 } from '../schemas/usersSchemas.js';
 import {
   currentUser,
@@ -56,6 +57,7 @@ usersRouter.get(
 usersRouter.patch(
   '/password/reset/:resetPasswordToken',
   resetPasswordProtection,
+  joiValidateDataMiddleware(resetPasswordJoiSchema),
   resetPassword,
 );
 
