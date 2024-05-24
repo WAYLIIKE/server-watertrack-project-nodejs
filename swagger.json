@@ -262,6 +262,168 @@
         }
       }
     },
+    "/users/verify/{verificationToken}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User verify by email",
+        "parameters": [
+          {
+            "name": "verification token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Verification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Verification successful"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/verify": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User resend verify by email",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "User email to reverify",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Verification link has been resent to your email"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email is wrong or your email is already verified."
+          }
+        }
+      }
+    },
+    "/users/password/forgot": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User password forgot",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "User email to recover password",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "A message wath a link to reset your password has been sent to your email"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email is wrong"
+          }
+        }
+      }
+    },
+    "/users/password/reset/{resetToken}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "User password reset",
+        "parameters": [
+          {
+            "name": "reset token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "requestBody": {},
+        "responses": {
+          "204": {
+            "description": "Reset successful"
+          },
+          "404": {
+            "description": "Route not found"
+          }
+        }
+      }
+    },
     "/water/add": {
       "post": {
         "tags": [
@@ -417,6 +579,48 @@
             "name": "date",
             "in": "path",
             "description": "Get data by day",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayWaterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/water/month/{date}": {
+      "get": {
+        "tags": [
+          "Water"
+        ],
+        "summary": "Water info by month",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Get data by month",
             "required": true,
             "schema": {
               "type": "string"
